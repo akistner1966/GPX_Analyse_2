@@ -15,7 +15,6 @@ import os
 
 #Backlog
 #Teildauern ausgaben
-#Diagramme - y-Achse - Teilung entsprechend Distanz
 #Trägheitsmoment bei Leistungs- und Energieberechnung einbauen
 
 class winddialog(object):
@@ -284,6 +283,14 @@ class gpxanalyse(object):
                                     if str(gen4.tag).find('ele') >= 0:
                                         elestr = str(gen4.text)
                                         self.ausglst.append(float(elestr))
+                                    if erstlauf:
+                                        erstlauf = False
+                                    else:
+                                        dist = self._dist(gbr, gle,
+                                                          altgbr, altgle)
+                                        self.dstlst.append(dist)
+                                    altgbr = gbr
+                                    altgle = gle
                             elif modus == 5: #Teillängen
                                 if erstlauf:
                                     erstlauf = False
@@ -992,10 +999,4 @@ if __name__== "__main__":
     optimenu.add_command(label='Wind definieren', underline=0,
                          command=winddef)
     root.config(menu = menubar)
-    #nur zu Testzwechen - Start
-    x = [0, 2, 3, 4, 5, 20, 22]
-    y = [0, 1, 2, 3, 4, 5, 6]
-    plt.plot(x, y)
-    plt.show()
-    #nur zu Testzwechen - Ende
     root.mainloop()

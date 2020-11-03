@@ -688,6 +688,7 @@ class gpxanalyse(object):
         distlst = []
         erstlauf = True
         firstdist = True
+        hges = 0
         if self.dnok:
             tree = ET.parse(self.dn)
             root = tree.getroot()
@@ -729,6 +730,8 @@ class gpxanalyse(object):
                                                   gbr, gle)
                                 dauer = (self._zeitwert(zeitstr) - \
                                     self._zeitwert(altzstr)).seconds
+                                if elevation > altele:
+                                    hges += elevation - altele
                                 if firstdist:
                                     lsmin = lsmax = dist
                                     firstdist = False

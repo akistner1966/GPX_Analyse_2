@@ -607,6 +607,19 @@ class gpxanalyse(object):
 
     def _char_rte(self):
         lges = 0
+        lsmin = 0
+        lsmax = 0
+        anzp = 0
+        stdabw = 0
+        mxmstr = ''
+        return(lges, lsmin, lsmax, anzp, stdabw, mxmstr)
+
+    def _char_trk(self):
+        lges = 0
+        anzp = 0
+        distlst = []
+        erstlauf = True
+        firstdist = True
         if self.dnok:
             tree = ET.parse(self.dn)
             root = tree.getroot()
@@ -620,12 +633,45 @@ class gpxanalyse(object):
                             lst2 = str(gen3.attrib).split('\'')
                             gbr = float(lst2[3])
                             gle = float(lst2[7])
-        return(lges, lsmin, lsmax, anzp, stdabw, maxminstr)
-
-    def _char_trk(self):
-        lges = 0
+                            anzp += 1
+                            if erstlauf:
+                                erstlauf = False
+                                maxn = maxs = gbr
+                                maxo = maxw = gle
+                            else:
+                                maxn = max(maxn, gbr)
+                                maxs = min(maxs, gbr)
+                                maxo = max(maxo, gle)
+                                maxw = min(maxw, gle)
+                                dist = self._dist(altgbr, altgle,
+                                                  gbr, gle)
+                                if firstdist:
+                                    lsmin = lsmax = dist
+                                    firstdist = False
+                                else:
+                                    lsmin = min(lsmin, dist)
+                                    lsmax = min(lsmax, dist)
+                                distlst.append(dist)
+                                lges += dist
+                            altgbr = gbr
+                            altgle = gle
+        qsumme = 0
+        if anzp > 1:
+            lmittel = lges/(anzp - 1)
+            for ele in distlst:
+                qsumme += (ele - lmittel)**2
+            stdabwdist = math.sqrt(qsumme)
+        else:
+            stdabwdist = 0
+        tges = 0 #muss später geändert werden
+        stdabwtime = 0 #muss später geändert werden
+        hges = 0 #muss später geändert werden
+        mxmstr = 'Nördlichster Punk: ' + str(maxn)
+        mxmstr += '\nOstlichster Punkt: ' + str(maxo)
+        mxmstr += '\nSüdlichster Punkt: ' + str(maxs)
+        mxmstr += '\nWestlichster Punkt: ' + str(maxw)
         return(lges, lsmin, lsmax, tges, hges, anzp, \
-            stdabwdist, stabwtime, maxminstr)
+            stdabwdist, stdabwtime, mxmstr)
 
     def aus_char(self):
         """
@@ -657,10 +703,10 @@ class gpxanalyse(object):
                     lst1 = gen2.tag.split('}')
                     if lst1[1] == 'trkseg':
                         trkcnt += 1
-            ausstr += '\nAnzahl Routen: ' + str(rtecnt)
+            ausstr += '\n\nAnzahl Routen: ' + str(rtecnt)
             ausstr += '\nAnzahl Tracks: ' + str(trkcnt)
             if rtecnt > 0:
-                ausstr += '\nRoute(n):'
+                ausstr += '\n\nRoute(n):'
                 self.lges, self.lsmin, self.lsmax, self.anzp, \
                     self.stdabw, self.maxminstr = \
                     self._char_rte()
@@ -680,7 +726,7 @@ class gpxanalyse(object):
                 ausstr += lcl.format('%0.2f', self.stdabw, 1) + 'km'
                 ausstr += '\n' + self.maxminstr
             if trkcnt > 0:
-                ausstr += '\nTrack(s):'
+                ausstr += '\n\nTrack(s):'
                 self.lges, self.lsmin, self.lsmax, self.tges, \
                     self.hges, self.anzp, self.stdabwdist, self.stabwtime, \
                     self.maxminstr = self._char_trk()
@@ -698,7 +744,6 @@ class gpxanalyse(object):
                 ausstr += lcl.format('%0.2f', self.lsmin, 1) + 'km'
                 ausstr += '\nStandardabweichung Länge: '
                 ausstr += lcl.format('%0.2f', self.stdabwdist, 1) + 'km'
-                ausstr += lcl.format('%0.2f', self.stdabw, 1) + 'km'
                 ausstr += '\n' + self.maxminstr
                 pass
             return(ausstr)

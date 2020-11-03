@@ -633,11 +633,6 @@ class gpxanalyse(object):
                             lst2 = str(gen3.attrib).split('\'')
                             gbr = float(lst2[3])
                             gle = float(lst2[7])
-                            for gen4 in gen3: 
-                                if str(gen4.tag).find('time') >= 0:
-                                    zeitstr = str(gen4.text)
-                                if str(gen4.tag).find('ele') >= 0:
-                                    elevation = float(str(gen4.text))
                             anzp += 1
                             if erstlauf:
                                 maxn = maxs = gbr
@@ -659,8 +654,6 @@ class gpxanalyse(object):
                                     mxwnr = anzp
                                 dist = self._dist(altgbr, altgle,
                                                   gbr, gle)
-                                dauer = (self._zeitwert(zeitst) - \
-                                    self._zeitwert(altzstr)).seconds
                                 if firstdist:
                                     lsmin = lsmax = dist
                                     firstdist = False
@@ -671,8 +664,6 @@ class gpxanalyse(object):
                                 lges += dist
                             altgbr = gbr
                             altgle = gle
-                            altzstr = zeitstr
-                            altele = elevation
         qsumme = 0
         if anzp > 1:
             lmittel = lges/(anzp - 1)
@@ -710,6 +701,11 @@ class gpxanalyse(object):
                             lst2 = str(gen3.attrib).split('\'')
                             gbr = float(lst2[3])
                             gle = float(lst2[7])
+                            for gen4 in gen3: 
+                                if str(gen4.tag).find('time') >= 0:
+                                    zeitstr = str(gen4.text)
+                                if str(gen4.tag).find('ele') >= 0:
+                                    elevation = float(str(gen4.text))
                             anzp += 1
                             if erstlauf:
                                 erstlauf = False
@@ -731,6 +727,8 @@ class gpxanalyse(object):
                                     mxwnr = anzp
                                 dist = self._dist(altgbr, altgle,
                                                   gbr, gle)
+                                dauer = (self._zeitwert(zeitstr) - \
+                                    self._zeitwert(altzstr)).seconds
                                 if firstdist:
                                     lsmin = lsmax = dist
                                     firstdist = False
@@ -741,6 +739,8 @@ class gpxanalyse(object):
                                 lges += dist
                             altgbr = gbr
                             altgle = gle
+                            altzstr = zeitstr
+                            altele = elevation
         qsumme = 0
         if anzp > 1:
             lmittel = lges/(anzp - 1)

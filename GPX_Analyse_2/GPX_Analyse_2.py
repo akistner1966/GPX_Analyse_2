@@ -659,6 +659,8 @@ class gpxanalyse(object):
                                     mxwnr = anzp
                                 dist = self._dist(altgbr, altgle,
                                                   gbr, gle)
+                                dauer = (self._zeitwert(zeitst) - \
+                                    self._zeitwert(altzstr)).seconds
                                 if firstdist:
                                     lsmin = lsmax = dist
                                     firstdist = False

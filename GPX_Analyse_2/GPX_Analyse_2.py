@@ -992,4 +992,10 @@ if __name__== "__main__":
     optimenu.add_command(label='Wind definieren', underline=0,
                          command=winddef)
     root.config(menu = menubar)
+    #nur zu Testzwechen - Start
+    x = [0, 2, 3, 4, 5, 20, 22]
+    y = [0, 1, 2, 3, 4, 5, 6]
+    plt.plot(x, y)
+    plt.show()
+    #nur zu Testzwechen - Ende
     root.mainloop()

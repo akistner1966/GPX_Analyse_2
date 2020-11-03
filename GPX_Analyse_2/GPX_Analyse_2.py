@@ -384,6 +384,7 @@ class gpxanalyse(object):
             jges = 2*(l2speiche**3*mfelge + \
                 fspeiche*l2speiche*rhostahl*\
                 l2speiche*l2speiche/12) #Trägheitsmoment der Räder
+            rreifen = 2.193/(2*math.pi) #Radius mit Reifen 622x38
             if modus == 1: #Koordinaten
                 return(self.blst, self.llst)
             elif modus == 2: #Höhenverlauf

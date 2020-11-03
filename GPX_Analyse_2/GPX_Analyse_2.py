@@ -16,6 +16,8 @@ import os
 #Backlog
 #Teildauern ausgaben
 #Trägheitsmoment bei Leistungs- und Energieberechnung einbauen
+#Abstand Anfang/Ende bei Char-Werten (Route) berechnen
+#Abstand Anfang/Ende bei Char-Werten (Track) berechnen
 
 class winddialog(object):
     def __init__(self, parent):
@@ -241,14 +243,13 @@ class gpxanalyse(object):
         für den Funktionsüarameter <modus> gilt:
         <modus> == 1: Ausgabe der Koordinatenliste
         <modus> == 2: Ausgabe des Höhenverlaufs
-        <modus> == 3: Ausgabe der Zeitpunkte
+        <modus> == 3: Ausgabe der Teildauer einzelner Schritte
         <modus> == 4: Ausgabe der Richtungen
         <modus> == 5: Ausgabe der Teillängen
         <modus> == 6: Ausgabe der Teilleistungen
         <modus> == 7: Ausgabe der Energien
         <modus> == 8: Ausgabe der Steigungen
         <modus> == 9: Ausgabe der Teilgeschwindigkeiten
-        <modus> == 10: Ausgabe der Teildauer einzelner Schritte
 
         Für die Ermittlung der Energie und Leistung werden
         Näherungswerte für Rollwiderstand, Reibungswiderstand,
@@ -291,6 +292,12 @@ class gpxanalyse(object):
                                         self.dstlst.append(dist)
                                     altgbr = gbr
                                     altgle = gle
+                            elif modus == 3: #Zeitpunkte/Teildauer
+                                for gen4 in gen3: 
+                                    if str(gen4.tag).find('time') >= 0:
+                                        zeitstr = str(gen4.text)
+                                        self.tmelst.\
+                                            append(self._zeitwert(zeitstr))
                             elif modus == 5: #Teillängen
                                 if erstlauf:
                                     erstlauf = False
@@ -364,8 +371,6 @@ class gpxanalyse(object):
                                         self.dstlst.append(dist)
                                     altgbr = gbr
                                     altgle = gle
-                            elif modus == 10: #Teildauer
-                                pass
             rwz = 0.00404 #Rollwiderstandzahl
             gerde = 9.81 #Gravitationsstärke der Erde (Oberfläche)
             mass = 95 #Gesamtmasse (Fahrrad + Fahrer)
@@ -390,8 +395,13 @@ class gpxanalyse(object):
             elif modus == 2: #Höhenverlauf
                 self._ausgplot('Höhe/m')
                 return(self.ausglst)
-            elif modus == 3:
-                pass
+            elif modus == 3: #Zeitpunkte/Teildauer
+                for cnt, ele in enumerate(self.tmelst, 0):
+                    if cnt > 0:
+                        tdelta = (self.tmelst[cnt] - \
+                            self.tmelst[cnt - 1]).seconds
+                        self.ausglst.append(tdelta)
+                self._ausgplot('Dauer/s')
             elif modus == 4: #Richtungen
                 lmin = lmax = self.llst[0]
                 for ele in self.llst:
@@ -471,8 +481,6 @@ class gpxanalyse(object):
                             self.ausglst.append(spd)
                 self._ausgplot('Geschwindigkeit/')
                 return(self.ausglst)
-            elif modus == 10: #Teildauer
-                pass
 
     def _dist(self, b1, l1, b2, l2):
         """
@@ -925,7 +933,8 @@ def mktstr(): #Länge der Teilstrecken
     ausglst = gpx.aus_partlen(1)
 
 def mktdura(): #Teildauer
-    pass
+    gpx = gpxanalyse(gpxdn)
+    ausglst = gpx.aus_time()
 
 def mkspds(): #Geschwindigkeiten
     gpx = gpxanalyse(gpxdn)

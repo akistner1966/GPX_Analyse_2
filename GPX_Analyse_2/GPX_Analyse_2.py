@@ -637,7 +637,7 @@ class gpxanalyse(object):
                                 if str(gen4.tag).find('time') >= 0:
                                     zeitstr = str(gen4.text)
                                 if str(gen4.tag).find('ele') >= 0:
-                                    elestr = str(gen4.text)
+                                    elevation = float(str(gen4.text))
                             anzp += 1
                             if erstlauf:
                                 maxn = maxs = gbr
@@ -672,7 +672,7 @@ class gpxanalyse(object):
                             altgbr = gbr
                             altgle = gle
                             altzstr = zeitstr
-                            altelestr = elestr
+                            altele = elevation
         qsumme = 0
         if anzp > 1:
             lmittel = lges/(anzp - 1)

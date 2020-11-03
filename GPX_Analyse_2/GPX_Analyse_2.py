@@ -685,7 +685,9 @@ class gpxanalyse(object):
     def _char_trk(self):
         lges = 0
         anzp = 0
+        tges = 0
         distlst = []
+        dauerlst = []
         erstlauf = True
         firstdist = True
         hges = 0
@@ -730,6 +732,8 @@ class gpxanalyse(object):
                                                   gbr, gle)
                                 dauer = (self._zeitwert(zeitstr) - \
                                     self._zeitwert(altzstr)).seconds
+                                tges += dauer
+                                dauerlst.append(dauer)
                                 if elevation > altele:
                                     hges += elevation - altele
                                 if firstdist:
@@ -750,11 +754,13 @@ class gpxanalyse(object):
             for ele in distlst:
                 qsumme += (ele - lmittel)**2
             stdabwdist = math.sqrt(qsumme)
+            tmittel = tges/(anzp - 1)
+            for ele in dauerlst:
+                qsumme += (ele - tmittel)**2
+            stdabwtime = math.sqrt(qsumme)
         else:
             stdabwdist = 0
-        tges = 0 #muss später geändert werden
-        stdabwtime = 0 #muss später geändert werden
-        hges = 0 #muss später geändert werden
+            stdabwtime = 0
         mxmstr = 'Nördlichster Punk: ' + str(maxn)
         mxmstr += '° (' + str(mxnnr) + '. Punkt)'
         mxmstr += '\nÖstlichster Punkt: ' + str(maxo)
@@ -837,6 +843,10 @@ class gpxanalyse(object):
                 ausstr += lcl.format('%0.2f', self.lsmin, 1) + 'km'
                 ausstr += '\nStandardabweichung Länge: '
                 ausstr += lcl.format('%0.2f', self.stdabwdist, 1) + 'km'
+                ausstr += '\nMaximale Gesamtdauer: '
+                ausstr += lcl.format('%d', self.tges, 1) + 's'
+                ausstr += '\nAnstieg gesamt: '
+                ausstr += lcl.format('%0.2f', self.hges, 1) + 'm'
                 ausstr += '\n' + self.maxminstr
             return(ausstr)
 

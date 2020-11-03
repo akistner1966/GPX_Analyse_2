@@ -633,6 +633,11 @@ class gpxanalyse(object):
                             lst2 = str(gen3.attrib).split('\'')
                             gbr = float(lst2[3])
                             gle = float(lst2[7])
+                            for gen4 in gen3: 
+                                if str(gen4.tag).find('time') >= 0:
+                                    zeitstr = str(gen4.text)
+                                if str(gen4.tag).find('ele') >= 0:
+                                    elestr = str(gen4.text)
                             anzp += 1
                             if erstlauf:
                                 erstlauf = False
@@ -655,6 +660,8 @@ class gpxanalyse(object):
                                 lges += dist
                             altgbr = gbr
                             altgle = gle
+                            altzstr = zeitstr
+                            altelestr = elestr
         qsumme = 0
         if anzp > 1:
             lmittel = lges/(anzp - 1)

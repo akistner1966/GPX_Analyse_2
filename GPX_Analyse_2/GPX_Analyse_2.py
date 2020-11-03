@@ -640,14 +640,23 @@ class gpxanalyse(object):
                                     elestr = str(gen4.text)
                             anzp += 1
                             if erstlauf:
-                                erstlauf = False
                                 maxn = maxs = gbr
                                 maxo = maxw = gle
+                                mxnnr = mxonr = mxsnr = mxwnr = anzp
+                                erstlauf = False
                             else:
-                                maxn = max(maxn, gbr)
-                                maxs = min(maxs, gbr)
-                                maxo = max(maxo, gle)
-                                maxw = min(maxw, gle)
+                                if gbr > maxn:
+                                    maxn = gbr
+                                    mxnnr = anzp
+                                if gbr < maxs:
+                                    maxs = gbr
+                                    mxsnr = anzp
+                                if gle > maxo:
+                                    maxo = gle
+                                    mxonr = anzp
+                                if gle < maxw:
+                                    maxw = gle
+                                    mxwnr = anzp
                                 dist = self._dist(altgbr, altgle,
                                                   gbr, gle)
                                 if firstdist:
@@ -671,9 +680,13 @@ class gpxanalyse(object):
         else:
             stdabwdist = 0
         mxmstr = 'Nördlichster Punk: ' + str(maxn)
+        mxmstr += '° (' + str(mxnnr) + '. Punkt)'
         mxmstr += '\nÖstlichster Punkt: ' + str(maxo)
+        mxmstr += '° (' + str(mxsnr) + '. Punkt)'
         mxmstr += '\nSüdlichster Punkt: ' + str(maxs)
+        mxmstr += '° (' + str(mxonr) + '. Punkt)'
         mxmstr += '\nWestlichster Punkt: ' + str(maxw)
+        mxmstr += '° (' + str(mxwnr) + '. Punkt)'
         return(lges, lsmin, lsmax, anzp, stdabw, mxmstr)
 
     def _char_trk(self):
@@ -700,11 +713,20 @@ class gpxanalyse(object):
                                 erstlauf = False
                                 maxn = maxs = gbr
                                 maxo = maxw = gle
+                                mxnnr = mxonr = mxsnr = mxwnr = anzp
                             else:
-                                maxn = max(maxn, gbr)
-                                maxs = min(maxs, gbr)
-                                maxo = max(maxo, gle)
-                                maxw = min(maxw, gle)
+                                if gbr > maxn:
+                                    maxn = gbr
+                                    mxnnr = anzp
+                                if gbr < maxs:
+                                    maxs = gbr
+                                    mxsnr = anzp
+                                if gle > maxo:
+                                    maxo = gle
+                                    mxonr = anzp
+                                if gle < maxw:
+                                    maxw = gle
+                                    mxwnr = anzp
                                 dist = self._dist(altgbr, altgle,
                                                   gbr, gle)
                                 if firstdist:
@@ -729,9 +751,13 @@ class gpxanalyse(object):
         stdabwtime = 0 #muss später geändert werden
         hges = 0 #muss später geändert werden
         mxmstr = 'Nördlichster Punk: ' + str(maxn)
+        mxmstr += '° (' + str(mxnnr) + '. Punkt)'
         mxmstr += '\nÖstlichster Punkt: ' + str(maxo)
+        mxmstr += '° (' + str(mxsnr) + '. Punkt)'
         mxmstr += '\nSüdlichster Punkt: ' + str(maxs)
+        mxmstr += '° (' + str(mxonr) + '. Punkt)'
         mxmstr += '\nWestlichster Punkt: ' + str(maxw)
+        mxmstr += '° (' + str(mxwnr) + '. Punkt)'
         return(lges, lsmin, lsmax, tges, hges, anzp, \
             stdabwdist, stdabwtime, mxmstr)
 

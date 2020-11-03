@@ -607,11 +607,57 @@ class gpxanalyse(object):
 
     def _char_rte(self):
         lges = 0
-        lsmin = 0
-        lsmax = 0
         anzp = 0
-        stdabw = 0
-        mxmstr = ''
+        distlst = []
+        erstlauf = True
+        firstdist = True
+        if self.dnok:
+            tree = ET.parse(self.dn)
+            root = tree.getroot()
+            altgbr = altgle = 0
+            for gen1 in root:
+                for gen2 in gen1:
+                    lst1 = gen2.tag.split('}')
+                    erstlauf = True
+                    if lst1[1] == 'rte':
+                        for gen3 in gen2:
+                            lst2 = str(gen3.attrib).split('\'')
+                            gbr = float(lst2[3])
+                            gle = float(lst2[7])
+                            anzp += 1
+                            if erstlauf:
+                                erstlauf = False
+                                maxn = maxs = gbr
+                                maxo = maxw = gle
+                            else:
+                                maxn = max(maxn, gbr)
+                                maxs = min(maxs, gbr)
+                                maxo = max(maxo, gle)
+                                maxw = min(maxw, gle)
+                                dist = self._dist(altgbr, altgle,
+                                                  gbr, gle)
+                                if firstdist:
+                                    lsmin = lsmax = dist
+                                    firstdist = False
+                                else:
+                                    lsmin = min(lsmin, dist)
+                                    lsmax = min(lsmax, dist)
+                                distlst.append(dist)
+                                lges += dist
+                            altgbr = gbr
+                            altgle = gle
+        qsumme = 0
+        if anzp > 1:
+            lmittel = lges/(anzp - 1)
+            for ele in distlst:
+                qsumme += (ele - lmittel)**2
+            stdabwdist = math.sqrt(qsumme)
+        else:
+            stdabwdist = 0
+        mxmstr = 'Nördlichster Punk: ' + str(maxn)
+        mxmstr += '\nÖstlichster Punkt: ' + str(maxo)
+        mxmstr += '\nSüdlichster Punkt: ' + str(maxs)
+        mxmstr += '\nWestlichster Punkt: ' + str(maxw)
         return(lges, lsmin, lsmax, anzp, stdabw, mxmstr)
 
     def _char_trk(self):
@@ -667,7 +713,7 @@ class gpxanalyse(object):
         stdabwtime = 0 #muss später geändert werden
         hges = 0 #muss später geändert werden
         mxmstr = 'Nördlichster Punk: ' + str(maxn)
-        mxmstr += '\nOstlichster Punkt: ' + str(maxo)
+        mxmstr += '\nÖstlichster Punkt: ' + str(maxo)
         mxmstr += '\nSüdlichster Punkt: ' + str(maxs)
         mxmstr += '\nWestlichster Punkt: ' + str(maxw)
         return(lges, lsmin, lsmax, tges, hges, anzp, \
@@ -745,7 +791,6 @@ class gpxanalyse(object):
                 ausstr += '\nStandardabweichung Länge: '
                 ausstr += lcl.format('%0.2f', self.stdabwdist, 1) + 'km'
                 ausstr += '\n' + self.maxminstr
-                pass
             return(ausstr)
 
     def _grstring(self, ein, plus = False):

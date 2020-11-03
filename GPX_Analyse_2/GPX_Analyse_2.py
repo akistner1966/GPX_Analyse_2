@@ -16,8 +16,7 @@ import os
 #Backlog
 #Teildauern ausgaben
 #Diagramme - y-Achse - Teilung entsprechend Distanz
-#charakteristische Werte für Routen fertigstellen
-#charakteristische Werte für Tracks/Tracksegmente fertigstellen
+#Trägheitsmoment bei Leistungs- und Energieberechnung einbauen
 
 class winddialog(object):
     def __init__(self, parent):
@@ -40,14 +39,24 @@ class winddialog(object):
         self.entSpd.pack(side=tk.LEFT)
         self.frBtn = tk.Frame(self.top)
         self.frBtn.pack(side=tk.TOP, fill=tk.BOTH)
-        self.btnOK = tk.Button(self.frBtn, text='OK', command=self.ok)
+        self.btnOK = tk.Button(self.frBtn, text='OK', underline=0,
+                               command=self.ok)
         self.btnOK.pack(side=tk.LEFT, padx=5, pady=5)
-        self.btnCancel = tk.Button(self.frBtn, text='OK',
-                                   command=self.cancel)
+        self.btnCancel = tk.Button(self.frBtn, text='Abbrechen',
+                                   underline=0,command=self.cancel)
         self.btnCancel.pack(side=tk.LEFT, padx=5, pady=5)
 
     def ok(self):
         self.top.destroy()
+
+    def ergebnis(self):
+        wgeschw = self.wspd.get()
+        wrichtung = self.wdir.get()
+        while wrichtung > 360:
+            wrichtung -= 360
+        while wrichtung < 0:
+            wrichtung += 360
+        return(wgeschw, wrichtung)
 
     def cancel(self):
         self.top.destroy()
@@ -888,9 +897,12 @@ def mkpowr(): #Energie
 
 def winddef():
     wdlg = winddialog(root)
+    root.wait_window(wdlg.top)
+    (wgeschw, wrichtung) = wdlg.ergebnis()
+    del(wdlg)
 
 if __name__== "__main__":
-    version = '1.29' #globale Versionskonstante
+    version = '1.35' #globale Versionskonstante
     lcl.setlocale(lcl.LC_NUMERIC, '')
     pfad = 'D:/AK-Dateien/Temp_Desktop/'
     dllst = [pfad + 'Lang1.gpx']

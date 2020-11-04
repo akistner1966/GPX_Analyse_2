@@ -42,11 +42,11 @@ class winddialog(object):
         self.lblSpd.pack(side=tk.LEFT)
         self.entSpd = tk.Entry(self.frSpd, textvariable = self.wspd)
         self.entSpd.pack(side=tk.LEFT)
-        #Felgendurchmesser Felgenmitte
-        #Raddurchmesser
+        #Felgendurchmesser Felgenmitte in Meter
+        #Raddurchmesser in Meter
         #Speichenzahl
-        #Speichendurchmesser
-        #Gesamtgewicht
+        #Speichendurchmesser in mm
+        #Gesamtgewicht in kg
         self.frBtn = tk.Frame(self.top)
         self.frBtn.pack(side=tk.TOP, fill=tk.BOTH)
         self.btnOK = tk.Button(self.frBtn, text='OK', underline=0,
@@ -245,6 +245,24 @@ class gpxanalyse(object):
         plt.xlabel('Schritt')
         plt.show()
 
+    def _xyplot(self, ylbl=''):
+        self.lenlst = [0]
+        lsum = 0
+        for ele in self.dstlst:
+            lsum += ele
+            self.lenlst.append(lsum)
+        print('X:' + str(len(self.lenlst)) + ' | Y: ' + str(len(self.ausglst)))
+        if len(self.lenlst) == len(self.ausglst):
+            ylst = np.array(self.ausglst)
+            xlst = np.array(self.lenlst)
+            plt.plot(xlst, ylst)
+            if ylbl != '':
+                plt.ylabel(ylbl)
+            plt.xlabel('Distanz/km')
+            plt.show()
+        else:
+            self._ausgplot(ylbl)
+
     def _analyse(self, modus):
         """
         Hier findet die eigentliche Analyse der GPX-Datei statt.
@@ -289,18 +307,18 @@ class gpxanalyse(object):
                             self.blst.append(gbr)
                             self.llst.append(gle)
                             if modus == 2: #Höhenverlauf
+                                if erstlauf:
+                                    erstlauf = False
+                                else:
+                                    dist = self._dist(gbr, gle,
+                                                      altgbr, altgle)
+                                    self.dstlst.append(dist)
+                                altgbr = gbr
+                                altgle = gle
                                 for gen4 in gen3: 
                                     if str(gen4.tag).find('ele') >= 0:
                                         elestr = str(gen4.text)
                                         self.ausglst.append(float(elestr))
-                                    if erstlauf:
-                                        erstlauf = False
-                                    else:
-                                        dist = self._dist(gbr, gle,
-                                                          altgbr, altgle)
-                                        self.dstlst.append(dist)
-                                    altgbr = gbr
-                                    altgle = gle
                             elif modus == 3: #Zeitpunkte/Teildauer
                                 for gen4 in gen3: 
                                     if str(gen4.tag).find('time') >= 0:
@@ -402,7 +420,7 @@ class gpxanalyse(object):
             if modus == 1: #Koordinaten
                 return(self.blst, self.llst)
             elif modus == 2: #Höhenverlauf
-                self._ausgplot('Höhe/m')
+                self._xyplot('Höhe/m')
                 return(self.ausglst)
             elif modus == 3: #Zeitpunkte/Teildauer
                 for cnt, ele in enumerate(self.tmelst, 0):

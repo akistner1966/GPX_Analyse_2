@@ -245,13 +245,24 @@ class gpxanalyse(object):
         plt.xlabel('Schritt')
         plt.show()
 
-    def _xyplot(self, ylbl=''):
-        self.lenlst = [0]
+    def _xyplot(self, modus, ylbl=''):
+        """
+        Für <modus> gilt:
+        <modus> == True. self.dstglst ist um ein Elemente kürzer als 
+        self.ausglst. Kommt z.B. bei den Höhen vor, weil diese an den 
+        Messpunkten ermittelt werden.
+        <modus> == False. self.dstglst ist genauso lang wie self.ausglst.
+        Kommt z.B. bei den Geschwindigkeiten vor, weil diese zwischen
+        den Messpunkten ermittelt werden.
+        """
+        if modus == True:
+            self.lenlst = [0]
+        else:
+            self.lenlst = []
         lsum = 0
         for ele in self.dstlst:
             lsum += ele
             self.lenlst.append(lsum)
-        print('X:' + str(len(self.lenlst)) + ' | Y: ' + str(len(self.ausglst)))
         if len(self.lenlst) == len(self.ausglst):
             ylst = np.array(self.ausglst)
             xlst = np.array(self.lenlst)
@@ -385,19 +396,19 @@ class gpxanalyse(object):
                                         altgle = gle
                                         h_alt = hoehe
                             elif modus == 9: #Teilgeschwindigkeiten
+                                if erstlauf:
+                                    erstlauf = False
+                                else:
+                                    dist = self._dist(gbr, gle,
+                                                      altgbr, altgle)
+                                    self.dstlst.append(dist)
+                                altgbr = gbr
+                                altgle = gle
                                 for gen4 in gen3: 
                                     if str(gen4.tag).find('time') >= 0:
                                         zeitstr = str(gen4.text)
                                         self.tmelst.\
                                             append(self._zeitwert(zeitstr))
-                                    if erstlauf:
-                                        erstlauf = False
-                                    else:
-                                        dist = self._dist(gbr, gle,
-                                                          altgbr, altgle)
-                                        self.dstlst.append(dist)
-                                    altgbr = gbr
-                                    altgle = gle
             rwz = 0.00404 #Rollwiderstandzahl
             gerde = 9.81 #Gravitationsstärke der Erde (Oberfläche)
             mass = 95 #Gesamtmasse (Fahrrad + Fahrer)
@@ -420,7 +431,7 @@ class gpxanalyse(object):
             if modus == 1: #Koordinaten
                 return(self.blst, self.llst)
             elif modus == 2: #Höhenverlauf
-                self._xyplot('Höhe/m')
+                self._xyplot(True, 'Höhe/m')
                 return(self.ausglst)
             elif modus == 3: #Zeitpunkte/Teildauer
                 for cnt, ele in enumerate(self.tmelst, 0):
@@ -504,9 +515,9 @@ class gpxanalyse(object):
                         tdelta = (self.tmelst[cnt] - \
                             self.tmelst[cnt - 1]).seconds
                         if tdelta > 0:
-                            spd = self.dstlst[cnt - 1]/tdelta
+                            spd = 3600*self.dstlst[cnt - 1]/tdelta
                             self.ausglst.append(spd)
-                self._ausgplot('Geschwindigkeit/')
+                self._xyplot(False, 'Geschwindigkeit/')
                 return(self.ausglst)
 
     def _dist(self, b1, l1, b2, l2):

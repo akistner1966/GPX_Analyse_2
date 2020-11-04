@@ -27,6 +27,11 @@ class winddialog(object):
     def __init__(self, parent):
         self.wdir = tk.StringVar() # Variale für Windrichtung
         self.wspd = tk.StringVar() # Variale für Windgeschwindigkeit
+        self.fdu = tk.StringVar() #Variale für WFelgendurchmesser
+        self.rdu = tk.StringVar() #Variale für WRaddurchmesser
+        self.sanz = tk.StringVar() #Variale für WSpeichenzahl
+        self.sdu = tk.StringVar() #Variale für WSpeichendurchmesser
+        self.gew = tk.StringVar() #Variale für WGesamtgewicht
         self.top = tk.Toplevel(parent)
         self.frDir = tk.Frame(self.top)
         self.frDir.pack(side=tk.TOP, fill=tk.BOTH)
@@ -42,12 +47,23 @@ class winddialog(object):
         self.lblSpd.pack(side=tk.LEFT)
         self.entSpd = tk.Entry(self.frSpd, textvariable = self.wspd)
         self.entSpd.pack(side=tk.LEFT)
-        #Felgendurchmesser Felgenmitte in Meter
-        #Raddurchmesser in Meter
-        #Speichenzahl
-        #Speichendurchmesser in mm
-        #Gesamtgewicht in kg
+        self.frFDu = tk.Frame(self.top)
+        self.frFDu.pack(side=tk.TOP, fill=tk.BOTH)
+        self.lbl = tk.Label(self.frFDu, text='Felgendurchmesser Felgenmitte in Meter')
+        self.frRDu = tk.Frame(self.top)
+        self.frRDu.pack(side=tk.TOP, fill=tk.BOTH)
+        self.lbl = tk.Label(self.frRDu, text='Raddurchmesser in Meter')
+        self.frSAnz = tk.Frame(self.top)
+        self.frSAnz.pack(side=tk.TOP, fill=tk.BOTH)
+        self.lbl = tk.Label(self.SAnz, text='Speichenzahl')
+        self.frSDu = tk.Frame(self.top)
+        self.frSDu.pack(side=tk.TOP, fill=tk.BOTH)
+        self.lbl = tk.Label(self.frSDu, text='Speichendurchmesser in mm')
+        self.frGew = tk.Frame(self.top)
+        self.frGew.pack(side=tk.TOP, fill=tk.BOTH)
+        self.lbl = tk.Label(self.frGew, text='Gesamtgewicht in kg')
         self.frBtn = tk.Frame(self.top)
+        self.fr.pack(side=tk.TOP, fill=tk.BOTH)
         self.frBtn.pack(side=tk.TOP, fill=tk.BOTH)
         self.btnOK = tk.Button(self.frBtn, text='OK', underline=0,
                                command=self.ok)
@@ -255,17 +271,30 @@ class gpxanalyse(object):
         Kommt z.B. bei den Geschwindigkeiten vor, weil diese zwischen
         den Messpunkten ermittelt werden.
         """
-        if modus == True:
-            self.lenlst = [0]
-        else:
-            self.lenlst = []
+        self.lenlst = [0]
         lsum = 0
         for ele in self.dstlst:
             lsum += ele
             self.lenlst.append(lsum)
-        if len(self.lenlst) == len(self.ausglst):
+        if modus == True:
             ylst = np.array(self.ausglst)
             xlst = np.array(self.lenlst)
+        else:
+            xlst = []
+            ylst = []
+            for cnt, ele in enumerate (self.lenlst, 0):
+                if cnt == 0:
+                    xlst.append(ele)
+                elif cnt < len(self.lenlst) - 1:
+                    xlst.append(ele)
+                    xlst.append(ele)
+                else:
+                    xlst.append(ele)
+            for cnt, ele in enumerate(self.ausglst, 0):
+                ylst.append(ele)
+                ylst.append(ele)
+        print('X: ' + str(len(xlst)) + ' | Y: ' + str(len(ylst)))
+        if len(xlst) == len(ylst):
             plt.plot(xlst, ylst)
             if ylbl != '':
                 plt.ylabel(ylbl)

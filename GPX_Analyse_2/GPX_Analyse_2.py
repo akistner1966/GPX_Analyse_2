@@ -15,9 +15,13 @@ import os
 
 #Backlog
 #Teildauern ausgaben
-#Trägheitsmoment bei Leistungs- und Energieberechnung einbauen
-#Abstand Anfang/Ende bei Char-Werten (Route) berechnen
-#Abstand Anfang/Ende bei Char-Werten (Track) berechnen
+#Diagramme - y-Achse - Teilung entsprechend Distanz
+#charakteristische Werte für Routen fertigstellen
+#  - Schlussstück
+#charakteristische Werte für Tracks/Tracksegmente fertigstellen
+#  - Schlussstück
+#  - Rotationsenergie
+#Eingabedialog
 
 class winddialog(object):
     def __init__(self, parent):
@@ -38,6 +42,11 @@ class winddialog(object):
         self.lblSpd.pack(side=tk.LEFT)
         self.entSpd = tk.Entry(self.frSpd, textvariable = self.wspd)
         self.entSpd.pack(side=tk.LEFT)
+        #Felgendurchmesser Felgenmitte
+        #Raddurchmesser
+        #Speichenzahl
+        #Speichendurchmesser
+        #Gesamtgewicht
         self.frBtn = tk.Frame(self.top)
         self.frBtn.pack(side=tk.TOP, fill=tk.BOTH)
         self.btnOK = tk.Button(self.frBtn, text='OK', underline=0,

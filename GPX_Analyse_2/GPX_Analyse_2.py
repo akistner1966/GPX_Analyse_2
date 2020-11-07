@@ -25,12 +25,19 @@ import os
 class winddialog(object):
     def __init__(self, parent):
         self.wdir = tk.StringVar() # Variale für Windrichtung
+        self.wdir.set(0)
         self.wspd = tk.StringVar() # Variale für Windgeschwindigkeit
+        self.wspd.set(0)
         self.fdu = tk.StringVar() #Variale für Felgendurchmesser
+        self.fdu.set(0)
         self.rdu = tk.StringVar() #Variale für Raddurchmesser
+        self.rdu.set(0)
         self.sanz = tk.StringVar() #Variale für Speichenzahl
+        self.sanz.set(0)
         self.sdu = tk.StringVar() #Variale für Speichendurchmesser
+        self.sdu.set(0)
         self.gew = tk.StringVar() #Variale für Gesamtgewicht
+        self.gew.set(0)
         self.top = tk.Toplevel(parent)
         self.frDir = tk.Frame(self.top)
         self.frDir.pack(side=tk.TOP, fill=tk.BOTH)
@@ -93,6 +100,9 @@ class winddialog(object):
         self.btnOK = tk.Button(self.frBtn, text='OK', underline=0,
                                command=self.ok)
         self.btnOK.pack(side=tk.LEFT, padx=5, pady=5)
+        self.btnDefault = tk.Button(self.frBtn, text='Default-Werte',
+                                    underline=0, command=self.default)
+        self.btnDefault.pack(side=tk.LEFT, padx=5, pady=5)
         self.btnCancel = tk.Button(self.frBtn, text='Abbrechen',
                                    underline=0,command=self.cancel)
         self.btnCancel.pack(side=tk.LEFT, padx=5, pady=5)
@@ -101,18 +111,21 @@ class winddialog(object):
         self.top.destroy()
 
     def ergebnis(self):
-        wgeschw = self.wspd.get()
-        wrichtung = self.wdir.get()
-        f_du = self.fdu.get()
-        r_du = self.rdu.get()
-        s_anz = self.sanz.get()
-        s_du = self.sdu.get()
-        gew_ges = self.gew.get() 
+        wgeschw = float(self.wspd.get())
+        wrichtung = float(self.wdir.get())
+        f_du = float(self.fdu.get())
+        r_du = float(self.rdu.get())
+        s_anz = float(self.sanz.get())
+        s_du = float(self.sdu.get())
+        gew_ges = float(self.gew.get())
         while wrichtung > 360:
             wrichtung -= 360
         while wrichtung < 0:
             wrichtung += 360
-        return(wgeschw, wrichtung)
+        return(wgeschw, wrichtung, f_du, r_du, s_anz, s_du, gew_ges)
+
+    def default(self):
+        pass
 
     def cancel(self):
         self.top.destroy()
@@ -1075,7 +1088,8 @@ def mkpowr(): #Energie
 def winddef():
     wdlg = winddialog(root)
     root.wait_window(wdlg.top)
-    (wgeschw, wrichtung) = wdlg.ergebnis()
+    (wgeschw, wrichtung, f__du, r__du, s__anz, s__du, gew__ges) = \
+        wdlg.ergebnis()
     del(wdlg)
 
 if __name__== "__main__":

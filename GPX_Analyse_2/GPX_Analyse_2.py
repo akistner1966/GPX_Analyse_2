@@ -14,13 +14,12 @@ import numpy as np
 import os
 
 #Backlog
-#Teildauern ausgaben
-#Diagramme - y-Achse - Teilung entsprechend Distanz vervollständigen
 #charakteristische Werte für Routen fertigstellen
 #  - Schlussstück
 #charakteristische Werte für Tracks/Tracksegmente fertigstellen
 #  - Schlussstück
 #  - Rotationsenergie
+#Ausgabe der charakteritischen Werte in einem Textfenster
 #Eingabedialog
 
 class winddialog(object):
@@ -36,32 +35,59 @@ class winddialog(object):
         self.frDir = tk.Frame(self.top)
         self.frDir.pack(side=tk.TOP, fill=tk.BOTH)
         txtstr = 'Windrichtung in Grad'
-        self.lblDir = tk.Label(self.frDir, text=txtstr)
+        self.lblDir = tk.Label(self.frDir, text=txtstr, width=35,
+                               anchor=tk.W)
         self.lblDir.pack(side=tk.LEFT)
         self.entDir = tk.Entry(self.frDir, textvariable = self.wdir)
         self.entDir.pack(side=tk.LEFT)
         self.frSpd = tk.Frame(self.top)
         self.frSpd.pack(side=tk.TOP, fill=tk.BOTH)
         txtstr = 'Windgeschwindigkeit in m/s'
-        self.lblSpd = tk.Label(self.frSpd, text=txtstr)
+        self.lblSpd = tk.Label(self.frSpd, text=txtstr, width=35,
+                               anchor=tk.W)
         self.lblSpd.pack(side=tk.LEFT)
         self.entSpd = tk.Entry(self.frSpd, textvariable = self.wspd)
         self.entSpd.pack(side=tk.LEFT)
         self.frFDu = tk.Frame(self.top)
         self.frFDu.pack(side=tk.TOP, fill=tk.BOTH)
-        self.lblFDu = tk.Label(self.frFDu, text='Felgendurchmesser Felgenmitte in Meter')
+        txtstr = 'Felgendurchmesser Felgenmitte in Meter'
+        self.lblFDu = tk.Label(self.frFDu, text=txtstr, width=35,
+                               anchor=tk.W)
+        self.lblFDu.pack(side=tk.LEFT)
+        self.entFDu = tk.Entry(self.frFDu, textvariable = self.fdu)
+        self.entFDu.pack(side=tk.LEFT)
         self.frRDu = tk.Frame(self.top)
         self.frRDu.pack(side=tk.TOP, fill=tk.BOTH)
-        self.lblRDu = tk.Label(self.frRDu, text='Raddurchmesser in Meter')
+        txtstr = 'Raddurchmesser in Meter'
+        self.lblRDu = tk.Label(self.frRDu, text=txtstr, width=35,
+                               anchor=tk.W)
+        self.lblRDu.pack(side=tk.LEFT)
+        self.entRDu = tk.Entry(self.frRDu, textvariable = self.rdu)
+        self.entRDu.pack(side=tk.LEFT)
         self.frSAnz = tk.Frame(self.top)
         self.frSAnz.pack(side=tk.TOP, fill=tk.BOTH)
-        self.lblSAnz = tk.Label(self.frSAnz, text='Speichenzahl')
+        txtstr = 'Speichenzahl'
+        self.lblSAnz = tk.Label(self.frSAnz, text=txtstr, width=35,
+                                anchor=tk.W)
+        self.lblSAnz.pack(side=tk.LEFT)
+        self.entSAnz = tk.Entry(self.frSAnz, textvariable = self.sanz)
+        self.entSAnz.pack(side=tk.LEFT)
         self.frSDu = tk.Frame(self.top)
         self.frSDu.pack(side=tk.TOP, fill=tk.BOTH)
-        self.lblSDu = tk.Label(self.frSDu, text='Speichendurchmesser in mm')
+        txtstr = 'Speichendurchmesser in mm'
+        self.lblSDu = tk.Label(self.frSDu, text=txtstr, width=35,
+                               anchor=tk.W)
+        self.lblSDu.pack(side=tk.LEFT)
+        self.entSDu = tk.Entry(self.frSDu, textvariable = self.sdu)
+        self.entSDu.pack(side=tk.LEFT)
         self.frGew = tk.Frame(self.top)
         self.frGew.pack(side=tk.TOP, fill=tk.BOTH)
-        self.lblGew = tk.Label(self.frGew, text='Gesamtgewicht in kg')
+        txtstr = 'Gesamtgewicht in kg'
+        self.lblGew = tk.Label(self.frGew, text=txtstr, width=35,
+                               anchor=tk.W)
+        self.lblGew.pack(side=tk.LEFT)
+        self.entGew = tk.Entry(self.frGew, textvariable = self.gew)
+        self.entGew.pack(side=tk.LEFT)
         self.frBtn = tk.Frame(self.top)
         self.frBtn.pack(side=tk.TOP, fill=tk.BOTH)
         self.btnOK = tk.Button(self.frBtn, text='OK', underline=0,
@@ -77,6 +103,11 @@ class winddialog(object):
     def ergebnis(self):
         wgeschw = self.wspd.get()
         wrichtung = self.wdir.get()
+        f_du = self.fdu.get()
+        r_du = self.rdu.get()
+        s_anz = self.sanz.get()
+        s_du = self.sdu.get()
+        gew_ges = self.gew.get() 
         while wrichtung > 360:
             wrichtung -= 360
         while wrichtung < 0:
@@ -85,9 +116,6 @@ class winddialog(object):
 
     def cancel(self):
         self.top.destroy()
-
-    def ergebnis(self):
-        return()
 
 class topo(object):
     def __init__(self, parent, blst, llst):

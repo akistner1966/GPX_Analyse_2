@@ -27,11 +27,11 @@ class winddialog(object):
     def __init__(self, parent):
         self.wdir = tk.StringVar() # Variale für Windrichtung
         self.wspd = tk.StringVar() # Variale für Windgeschwindigkeit
-        self.fdu = tk.StringVar() #Variale für WFelgendurchmesser
-        self.rdu = tk.StringVar() #Variale für WRaddurchmesser
-        self.sanz = tk.StringVar() #Variale für WSpeichenzahl
-        self.sdu = tk.StringVar() #Variale für WSpeichendurchmesser
-        self.gew = tk.StringVar() #Variale für WGesamtgewicht
+        self.fdu = tk.StringVar() #Variale für Felgendurchmesser
+        self.rdu = tk.StringVar() #Variale für Raddurchmesser
+        self.sanz = tk.StringVar() #Variale für Speichenzahl
+        self.sdu = tk.StringVar() #Variale für Speichendurchmesser
+        self.gew = tk.StringVar() #Variale für Gesamtgewicht
         self.top = tk.Toplevel(parent)
         self.frDir = tk.Frame(self.top)
         self.frDir.pack(side=tk.TOP, fill=tk.BOTH)
@@ -55,7 +55,7 @@ class winddialog(object):
         self.lblRDu = tk.Label(self.frRDu, text='Raddurchmesser in Meter')
         self.frSAnz = tk.Frame(self.top)
         self.frSAnz.pack(side=tk.TOP, fill=tk.BOTH)
-        self.lblSAnz = tk.Label(self.SAnz, text='Speichenzahl')
+        self.lblSAnz = tk.Label(self.frSAnz, text='Speichenzahl')
         self.frSDu = tk.Frame(self.top)
         self.frSDu.pack(side=tk.TOP, fill=tk.BOTH)
         self.lblSDu = tk.Label(self.frSDu, text='Speichendurchmesser in mm')
@@ -63,7 +63,6 @@ class winddialog(object):
         self.frGew.pack(side=tk.TOP, fill=tk.BOTH)
         self.lblGew = tk.Label(self.frGew, text='Gesamtgewicht in kg')
         self.frBtn = tk.Frame(self.top)
-        self.fr.pack(side=tk.TOP, fill=tk.BOTH)
         self.frBtn.pack(side=tk.TOP, fill=tk.BOTH)
         self.btnOK = tk.Button(self.frBtn, text='OK', underline=0,
                                command=self.ok)
@@ -365,6 +364,15 @@ class gpxanalyse(object):
                                         zeitstr = str(gen4.text)
                                         self.tmelst.\
                                             append(self._zeitwert(zeitstr))
+                            elif modus == 4: #Richtungen
+                                if erstlauf:
+                                    erstlauf = False
+                                else:
+                                    dist = self._dist(gbr, gle,
+                                                      altgbr, altgle)
+                                    self.dstlst.append(dist)
+                                altgbr = gbr
+                                altgle = gle
                             elif modus == 5: #Teillängen
                                 if erstlauf:
                                     erstlauf = False
@@ -498,10 +506,12 @@ class gpxanalyse(object):
                                 winkel += 360
                             while winkel > 360:
                                 winkel -= 360
-                            self.ausglst.append(winkel)
+                        else:
+                            winkel = 0 #damit Liste gefüllt wird
+                        self.ausglst.append(winkel)
                     gbalt = self.blst[cnt]
                     glalt = self.llst[cnt]
-                self._ausgplot('Richtung/°')
+                self._xyplot(False, 'Richtungen/°')
                 return(self.ausglst)
             elif modus == 5: #Teillängen
                 self._ausgplot('Teillänge/m')
@@ -1080,7 +1090,7 @@ if __name__== "__main__":
     ausgmenu.add_command(label='Leistung', underline=0, command=mkpowr)
     optimenu = tk.Menu(menubar, tearoff=0)
     menubar.add_cascade(label='Einstellungen', underline=0, menu = optimenu)
-    optimenu.add_command(label='Wind definieren', underline=0,
+    optimenu.add_command(label='Wind, Maße und Gewichte', underline=0,
                          command=winddef)
     root.config(menu = menubar)
     root.mainloop()

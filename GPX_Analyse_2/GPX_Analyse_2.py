@@ -20,24 +20,46 @@ import os
 #  - Schlussstück
 #  - Rotationsenergie
 #Ausgabe der charakteritischen Werte in einem Textfenster
-#Eingabedialog
 
 class winddialog(object):
-    def __init__(self, parent):
-        self.wdir = tk.StringVar() # Variale für Windrichtung
-        self.wdir.set(0)
+    def __init__(self, parent, wgeschw=-1, wrichtung=-1, f_du=-1,
+                 s_anz=-1, s_du=-1, gew_ges=-1):
+        self.def_wspd = 0
+        self.def_wdir = 0
+        self.def_fdu = 0.6
+        self.def_sanz = 36
+        self.def_sdu = 0.002
+        self.def_gew = 95
         self.wspd = tk.StringVar() # Variale für Windgeschwindigkeit
-        self.wspd.set(0)
+        if wgeschw == -1:
+            self.wspd.set(self.def_wspd)
+        else:
+            self.wspd.set(wrichtung)
+        self.wdir = tk.StringVar() # Variale für Windrichtung
+        if wrichtung == -1:
+            self.wdir.set(self.def_wdir)
+        else:
+            self.wdir.set(wgeschw)
         self.fdu = tk.StringVar() #Variale für Felgendurchmesser
-        self.fdu.set(0)
-        self.rdu = tk.StringVar() #Variale für Raddurchmesser
-        self.rdu.set(0)
+        if f_du == -1:
+            self.fdu.set(self.def_fdu)
+        else:
+            self.fdu.set(f_du)
         self.sanz = tk.StringVar() #Variale für Speichenzahl
-        self.sanz.set(0)
+        if s_anz == -1:
+            self.sanz.set(self.def_sanz)
+        else:
+            self.sanz.set(s_anz)
         self.sdu = tk.StringVar() #Variale für Speichendurchmesser
-        self.sdu.set(0)
+        if s_du == -1:
+            self.sdu.set(self.def_sdu)
+        else:
+            self.sdu.set(s_du)
         self.gew = tk.StringVar() #Variale für Gesamtgewicht
-        self.gew.set(0)
+        if gew_ges == -1:
+            self.gew.set(self.def_gew)
+        else:
+            self.gew.set(gew_ges)
         self.top = tk.Toplevel(parent)
         self.frDir = tk.Frame(self.top)
         self.frDir.pack(side=tk.TOP, fill=tk.BOTH)
@@ -65,12 +87,6 @@ class winddialog(object):
         self.entFDu.pack(side=tk.LEFT)
         self.frRDu = tk.Frame(self.top)
         self.frRDu.pack(side=tk.TOP, fill=tk.BOTH)
-        txtstr = 'Raddurchmesser in Meter'
-        self.lblRDu = tk.Label(self.frRDu, text=txtstr, width=35,
-                               anchor=tk.W)
-        self.lblRDu.pack(side=tk.LEFT)
-        self.entRDu = tk.Entry(self.frRDu, textvariable = self.rdu)
-        self.entRDu.pack(side=tk.LEFT)
         self.frSAnz = tk.Frame(self.top)
         self.frSAnz.pack(side=tk.TOP, fill=tk.BOTH)
         txtstr = 'Speichenzahl'
@@ -81,7 +97,7 @@ class winddialog(object):
         self.entSAnz.pack(side=tk.LEFT)
         self.frSDu = tk.Frame(self.top)
         self.frSDu.pack(side=tk.TOP, fill=tk.BOTH)
-        txtstr = 'Speichendurchmesser in mm'
+        txtstr = 'Speichendurchmesser in Meter'
         self.lblSDu = tk.Label(self.frSDu, text=txtstr, width=35,
                                anchor=tk.W)
         self.lblSDu.pack(side=tk.LEFT)
@@ -114,7 +130,6 @@ class winddialog(object):
         wgeschw = float(self.wspd.get())
         wrichtung = float(self.wdir.get())
         f_du = float(self.fdu.get())
-        r_du = float(self.rdu.get())
         s_anz = float(self.sanz.get())
         s_du = float(self.sdu.get())
         gew_ges = float(self.gew.get())
@@ -122,7 +137,7 @@ class winddialog(object):
             wrichtung -= 360
         while wrichtung < 0:
             wrichtung += 360
-        return(wgeschw, wrichtung, f_du, r_du, s_anz, s_du, gew_ges)
+        return(wgeschw, wrichtung, f_du, s_anz, s_du, gew_ges)
 
     def default(self):
         pass
@@ -498,15 +513,16 @@ class gpxanalyse(object):
             freib = rwz*mass*gerde #Reibungswiderstand in Newton
             froll = 0.2 #Rollwiderstand in Newton
             mfelge = 0.54 #Gewicht einer Felge in kg
-            l2speiche = 0.6 #Länge von zwei gegenüberliegenden Speichen
-            duspeiche = 0.002 #Durchmesser einer Speiche
+            l2speiche = 0.6 #Länge von zwei gegenüberliegenden Speichen in m
+            anzspeichen = 36# Anzahl der Speichen je Rad
+            duspeiche = 0.002 #Durchmesser einer Speiche in m
             rhostahl = 7850 #Dichte von Stahl in kg/m³
             rhoalu = 2699 #Dicht von Alumium in kg/m³
             fspeiche = math.pi*duspeiche*duspeiche/4 #Querschnitt Speiche
             mreifen = 0.96 #Masse eines Reifens (Schwalbe Marathon Plus)
             mschlauch = 0.1 #Gwicht eines Schlauchs
             jges = 2*mfelge*l2speiche**2 #Trägheitsmoment Räder 1/3
-            jges += 2*fspeiche*l2speiche*rhostahl*\
+            jges += anzspeichen/2*2*fspeiche*l2speiche*rhostahl*\
                 l2speiche*l2speiche/12 #TrägheitsmomentRäder 2/3
             jges += 2*(mreifen + mschlauch)*\
                 l2speiche*l2speiche #TrägheitsmomentRäder 3/3
@@ -1088,7 +1104,7 @@ def mkpowr(): #Energie
 def winddef():
     wdlg = winddialog(root)
     root.wait_window(wdlg.top)
-    (wgeschw, wrichtung, f__du, r__du, s__anz, s__du, gew__ges) = \
+    (wgeschw, wrichtung, f__du, s__anz, s__du, gew__ges) = \
         wdlg.ergebnis()
     del(wdlg)
 

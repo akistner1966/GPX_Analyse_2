@@ -15,7 +15,7 @@ import os
 
 #Backlog
 #Teildauern ausgaben
-#Diagramme - y-Achse - Teilung entsprechend Distanz
+#Diagramme - y-Achse - Teilung entsprechend Distanz vervollständigen
 #charakteristische Werte für Routen fertigstellen
 #  - Schlussstück
 #charakteristische Werte für Tracks/Tracksegmente fertigstellen
@@ -49,19 +49,19 @@ class winddialog(object):
         self.entSpd.pack(side=tk.LEFT)
         self.frFDu = tk.Frame(self.top)
         self.frFDu.pack(side=tk.TOP, fill=tk.BOTH)
-        self.lbl = tk.Label(self.frFDu, text='Felgendurchmesser Felgenmitte in Meter')
+        self.lblFDu = tk.Label(self.frFDu, text='Felgendurchmesser Felgenmitte in Meter')
         self.frRDu = tk.Frame(self.top)
         self.frRDu.pack(side=tk.TOP, fill=tk.BOTH)
-        self.lbl = tk.Label(self.frRDu, text='Raddurchmesser in Meter')
+        self.lblRDu = tk.Label(self.frRDu, text='Raddurchmesser in Meter')
         self.frSAnz = tk.Frame(self.top)
         self.frSAnz.pack(side=tk.TOP, fill=tk.BOTH)
-        self.lbl = tk.Label(self.SAnz, text='Speichenzahl')
+        self.lblSAnz = tk.Label(self.SAnz, text='Speichenzahl')
         self.frSDu = tk.Frame(self.top)
         self.frSDu.pack(side=tk.TOP, fill=tk.BOTH)
-        self.lbl = tk.Label(self.frSDu, text='Speichendurchmesser in mm')
+        self.lblSDu = tk.Label(self.frSDu, text='Speichendurchmesser in mm')
         self.frGew = tk.Frame(self.top)
         self.frGew.pack(side=tk.TOP, fill=tk.BOTH)
-        self.lbl = tk.Label(self.frGew, text='Gesamtgewicht in kg')
+        self.lblGew = tk.Label(self.frGew, text='Gesamtgewicht in kg')
         self.frBtn = tk.Frame(self.top)
         self.fr.pack(side=tk.TOP, fill=tk.BOTH)
         self.frBtn.pack(side=tk.TOP, fill=tk.BOTH)
@@ -451,11 +451,16 @@ class gpxanalyse(object):
             mfelge = 0.54 #Gewicht einer Felge in kg
             l2speiche = 0.6 #Länge von zwei gegenüberliegenden Speichen
             duspeiche = 0.002 #Durchmesser einer Speiche
-            rhostahl = 7850 #Dichte von Stahl in km/m³
+            rhostahl = 7850 #Dichte von Stahl in kg/m³
+            rhoalu = 2699 #Dicht von Alumium in kg/m³
             fspeiche = math.pi*duspeiche*duspeiche/4 #Querschnitt Speiche
-            jges = 2*(l2speiche**3*mfelge + \
-                fspeiche*l2speiche*rhostahl*\
-                l2speiche*l2speiche/12) #Trägheitsmoment der Räder
+            mreifen = 0.96 #Masse eines Reifens (Schwalbe Marathon Plus)
+            mschlauch = 0.1 #Gwicht eines Schlauchs
+            jges = 2*mfelge*l2speiche**2 #Trägheitsmoment Räder 1/3
+            jges += 2*fspeiche*l2speiche*rhostahl*\
+                l2speiche*l2speiche/12 #TrägheitsmomentRäder 2/3
+            jges += 2*(mreifen + mschlauch)*\
+                l2speiche*l2speiche #TrägheitsmomentRäder 3/3
             rreifen = 2.193/(2*math.pi) #Radius mit Reifen 622x38
             if modus == 1: #Koordinaten
                 return(self.blst, self.llst)
@@ -531,7 +536,9 @@ class gpxanalyse(object):
                             fsteig = mass*gerde*math.sin(wi*math.pi/180)
                             fges = froll + freib + fsteig + \
                                         lwkonst*geschw*geschw
-                            work = fges*self.dstlst[cnt - 1]*1000
+                            wrot = 0 #Rotationsenergie
+                            wkin = 0 #kinetische Energie
+                            work = fges*self.dstlst[cnt - 1]*1000 + wrot + wkin
                             self.ausglst.append(work)
                 self._ausgplot('Teilenergie/J')
                 return(self.ausglst)

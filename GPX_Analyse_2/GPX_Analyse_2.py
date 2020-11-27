@@ -21,15 +21,27 @@ import os
 #  - Rotationsenergie
 #Ausgabe der charakteritischen Werte in einem Textfenster
 
+class eig_default(object):
+    def __init__(self):
+        self._def_wspd = 0
+        self._def_wdir = 0
+        self._def_fdu = 0.6
+        self._def_sanz = 36
+        self._def_sdu = 0.002
+        self._def_gew = 95
+
+    def setdefault(self):
+        return(self._def_wspd, self._def_wdir,
+               self._def_fdu, self._def_sanz,
+               self._def_sdu, self._def_gew)
+
 class winddialog(object):
     def __init__(self, parent, wgeschw=-1, wrichtung=-1, f_du=-1,
                  s_anz=-1, s_du=-1, gew_ges=-1):
-        self.def_wspd = 0
-        self.def_wdir = 0
-        self.def_fdu = 0.6
-        self.def_sanz = 36
-        self.def_sdu = 0.002
-        self.def_gew = 95
+        eigd = eig_default()
+        (self.def_wspd, self.def_wdir, self.def_fdu,
+         self.def_sanz, self.def_sdu, self.def_gew) =\
+             eigd.setdefault()
         self.wspd = tk.StringVar() # Variale für Windgeschwindigkeit
         if wgeschw == -1:
             self.wspd.set(self.def_wspd)
@@ -1102,6 +1114,7 @@ def mkpowr(): #Energie
     ausglst = gpx.aus_power()
 
 def winddef():
+    global wgeschw, wrichtung, f__du, s__anz, s__du, gew__ges
     wdlg = winddialog(root)
     root.wait_window(wdlg.top)
     (wgeschw, wrichtung, f__du, s__anz, s__du, gew__ges) = \
@@ -1109,9 +1122,12 @@ def winddef():
     del(wdlg)
 
 if __name__== "__main__":
-    version = '1.35' #globale Versionskonstante
+    version = '1.47' #globale Versionskonstante
     lcl.setlocale(lcl.LC_NUMERIC, '')
     pfad = 'D:/AK-Dateien/Temp_Desktop/'
+    eigd = eig_default()
+    (wgeschw, wrichtung, f__du, s__anz, s__du, gew__ges) = \
+        eigd.setdefault()
     dllst = [pfad + 'Lang1.gpx']
     dllst.append(pfad + 'Roermond_Aug_2018_Angepasst.gpx')
     dllst.append(pfad + 'Roermond_Aug_2018_Orig.gpx')

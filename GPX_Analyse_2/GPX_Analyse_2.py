@@ -783,6 +783,14 @@ class gpxanalyse(object):
         self.spdslst = self._analyse(9)
         return(self.spdslst)
 
+    def _sgn(self, ein):
+        if ein == 0:
+            return(0)
+        elif ein > 0:
+            return(1)
+        else:
+            return(-1)
+
     def _char_rte(self):
         lges = 0
         anzp = 0
@@ -849,6 +857,24 @@ class gpxanalyse(object):
         mxmstr += '° (' + str(mxonr) + '. Punkt)'
         mxmstr += '\nWestlichster Punkt: ' + str(maxw)
         mxmstr += '° (' + str(mxwnr) + '. Punkt)'
+        mxmstr += '\nAusdehnung Nord-Süd: '
+        mxmstr += lcl.format('%0.2f', maxn - maxs, 1) + '° ('
+        mxmstr += lcl.format('%0.2f', 40000*abs(maxn - maxs)/360, 1) + 'km)'
+        if self._sgn(maxn) != self._sgn(maxs): #Halbkugel-überschreitend
+            maxowdst = self._dist(0, maxo, 0, maxw)
+            mingbabs = min(abs(maxn), abs(maxs))
+            minowdst = self._dist(mingbabs, maxo, mingbabs, maxw)
+        else: #nicht Halbkugel-überschreitend
+            maxgbabs = max(abs(maxn), abs(maxs))
+            maxowdst = self._dist(maxgbabs, maxo, maxgbabs, maxw)
+            mingbabs = min(abs(maxn), abs(maxs))
+            minowdst = self._dist(mingbabs, maxo, mingbabs, maxw)
+        mxmstr += '\nAusdehnung Ost-West (max): '
+        mxmstr += lcl.format('%0.2f', maxo - maxw, 1) + '° ('
+        mxmstr += lcl.format('%0.2f', maxowdst, 1) + 'km)'
+        mxmstr += '\nAusdehnung Ost-West (min): '
+        mxmstr += lcl.format('%0.2f', maxo - maxw, 1) + '° ('
+        mxmstr += lcl.format('%0.2f', minowdst, 1) + 'km)'
         return(lges, lsmin, lsmax, anzp, stdabw, mxmstr)
 
     def _char_trk(self):
@@ -938,6 +964,24 @@ class gpxanalyse(object):
         mxmstr += '° (' + str(mxonr) + '. Punkt)'
         mxmstr += '\nWestlichster Punkt: ' + str(maxw)
         mxmstr += '° (' + str(mxwnr) + '. Punkt)'
+        mxmstr += '\nAusdehnung Nord-Süd: '
+        mxmstr += lcl.format('%0.2f', maxn - maxs, 1) + '° ('
+        mxmstr += lcl.format('%0.2f', 40000*abs(maxn - maxs)/360, 1) + 'km)'
+        if self._sgn(maxn) != self._sgn(maxs): #Halbkugel-überschreitend
+            maxowdst = self._dist(0, maxo, 0, maxw)
+            mingbabs = min(abs(maxn), abs(maxs))
+            minowdst = self._dist(mingbabs, maxo, mingbabs, maxw)
+        else: #nicht Halbkugel-überschreitend
+            maxgbabs = max(abs(maxn), abs(maxs))
+            maxowdst = self._dist(maxgbabs, maxo, maxgbabs, maxw)
+            mingbabs = min(abs(maxn), abs(maxs))
+            minowdst = self._dist(mingbabs, maxo, mingbabs, maxw)
+        mxmstr += '\nAusdehnung Ost-West (max): '
+        mxmstr += lcl.format('%0.2f', maxo - maxw, 1) + '° ('
+        mxmstr += lcl.format('%0.2f', maxowdst, 1) + 'km)'
+        mxmstr += '\nAusdehnung Ost-West (min): '
+        mxmstr += lcl.format('%0.2f', maxo - maxw, 1) + '° ('
+        mxmstr += lcl.format('%0.2f', minowdst, 1) + 'km)'
         return(lges, lsmin, lsmax, tges, hges, anzp, \
             stdabwdist, stdabwtime, mxmstr)
 
@@ -1010,6 +1054,13 @@ class gpxanalyse(object):
                 ausstr += lcl.format('%0.2f', self.lsmax, 1) + 'km'
                 ausstr += '\nMinimale Länge eines Schrittes: '
                 ausstr += lcl.format('%0.2f', self.lsmin, 1) + 'km'
+                ausstr += '\nMinimale Höhe: '
+                ausstr += '\nMaximale Höhe: '
+                ausstr += '\nKürzeste Dauer eines Schrittes: '
+                ausstr += '\nLängste Dauer eines Schrittes: '
+                strplus =  'mittlere Geschwindigkeit eines Schrittes: '
+                ausstr += '\nMinimale ' + strplus
+                ausstr += '\nMaximale ' + strplus
                 ausstr += '\nStandardabweichung Länge: '
                 ausstr += lcl.format('%0.2f', self.stdabwdist, 1) + 'km'
                 ausstr += '\nMaximale Gesamtdauer: '
@@ -1132,6 +1183,8 @@ if __name__== "__main__":
         for zeile in fobj:
             cnt += 1
             if cnt <= 5:
+                if zeile.find('\n') != -1:
+                    zeile = zeile.replace('\n', '')
                 dllst.append(zeile)
         fobj.close()
     except:
@@ -1157,6 +1210,8 @@ if __name__== "__main__":
         filemenu.add_command(label=dllst[3], underline=0, command=seldn4)
     if len(dllst) > 4:
         filemenu.add_command(label=dllst[4], underline=0, command=seldn5)
+    if len(dllst) > 0:
+        filemenu.add_separator()
     filemenu.add_command(label='Beenden', underline=0,
                          command=root.destroy, accelerator='Alt+F4')
     ausgmenu = tk.Menu(menubar, tearoff=0)

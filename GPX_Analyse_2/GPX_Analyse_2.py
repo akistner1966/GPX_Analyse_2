@@ -1124,15 +1124,21 @@ def winddef():
 if __name__== "__main__":
     version = '1.47' #globale Versionskonstante
     lcl.setlocale(lcl.LC_NUMERIC, '')
-    pfad = 'D:/AK-Dateien/Temp_Desktop/'
+    recdn = 'Recentfiles.txt'
+    dllst = []
+    try:
+        fobj = open(recdn)
+        cnt = 0
+        for zeile in fobj:
+            cnt += 1
+            if cnt <= 5:
+                dllst.append(zeile)
+        fobj.close()
+    except:
+        pass
     eigd = eig_default()
     (wgeschw, wrichtung, f__du, s__anz, s__du, gew__ges) = \
         eigd.setdefault()
-    dllst = [pfad + 'Lang1.gpx']
-    dllst.append(pfad + 'Roermond_Aug_2018_Angepasst.gpx')
-    dllst.append(pfad + 'Roermond_Aug_2018_Orig.gpx')
-    dllst.append(pfad + 'Umrandung201014.gpx')
-    dllst.append(pfad + 'Solingen_Sinzig.gpx')
     wspd = 0 #Windgeschwindigkeit in m/s
     wdir = 0 #Windrichtung in Grad (von da kommt der Wind)
     root = tk.Tk()
@@ -1141,11 +1147,16 @@ if __name__== "__main__":
     menubar = tk.Menu(root)
     filemenu = tk.Menu(menubar, tearoff=0)
     menubar.add_cascade(label='Datei', underline=0, menu = filemenu)
-    filemenu.add_command(label=dllst[0], underline=0, command=seldn1)
-    filemenu.add_command(label=dllst[1], underline=0, command=seldn2)
-    filemenu.add_command(label=dllst[2], underline=0, command=seldn3)
-    filemenu.add_command(label=dllst[3], underline=0, command=seldn4)
-    filemenu.add_command(label=dllst[4], underline=0, command=seldn5)
+    if len(dllst) > 0:
+        filemenu.add_command(label=dllst[0], underline=0, command=seldn1)
+    if len(dllst) > 1:
+        filemenu.add_command(label=dllst[1], underline=0, command=seldn2)
+    if len(dllst) > 2:
+        filemenu.add_command(label=dllst[2], underline=0, command=seldn3)
+    if len(dllst) > 3:
+        filemenu.add_command(label=dllst[3], underline=0, command=seldn4)
+    if len(dllst) > 4:
+        filemenu.add_command(label=dllst[4], underline=0, command=seldn5)
     filemenu.add_command(label='Beenden', underline=0,
                          command=root.destroy, accelerator='Alt+F4')
     ausgmenu = tk.Menu(menubar, tearoff=0)
